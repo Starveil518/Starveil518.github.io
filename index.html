@@ -1,0 +1,2244 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>✨ 星穹英雄 · 双条件晋级</title>
+    <style>
+        /* ========== 全局变量 ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --bg-color: #0b0e1a;
+            --bg-image: none;
+            --gold: #ffd700;
+            --purple: #c084fc;
+            --blue: #60a5fa;
+            --green: #34d399;
+            --white: #e5e7eb;
+            --text: #fff;
+            --text2: rgba(255, 255, 255, 0.7);
+            --radius: 28px;
+            --shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
+            --transition: 0.25s ease;
+            --card-bg: rgba(255, 255, 255, 0.04);
+        }
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            background-image: var(--bg-image);
+            background-size: cover;
+            background-position: center;
+            background-blend-mode: overlay;
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+            transition: background 0.4s;
+        }
+        .app {
+            width: 100%;
+            max-width: 520px;
+            background: rgba(8, 10, 24, 0.75);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 48px;
+            padding: 20px 18px 14px;
+            box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            flex-direction: column;
+            height: 96vh;
+            max-height: 880px;
+            overflow: hidden;
+        }
+        /* ===== 顶栏 ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            flex-shrink: 0;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo span {
+            font-size: 26px;
+        }
+        .logo h1 {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f7e05e, #f9b042);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .user-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 4px 12px 4px 16px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .user-wrap .greet {
+            font-size: 13px;
+            color: var(--text2);
+        }
+        .user-wrap .uname {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .user-wrap .btn-sm {
+            padding: 4px 14px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, #f7e05e, #f9b042);
+            color: #1a1f33;
+        }
+        .btn-gold:hover {
+            transform: scale(1.04);
+        }
+        .btn-danger-sm {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
+
+        /* ===== 内容滚动 ===== */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 0 8px;
+            scrollbar-width: thin;
+        }
+        .content::-webkit-scrollbar {
+            width: 4px;
+        }
+        .content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+        }
+        .tab-page {
+            display: none;
+            animation: fadeUp 0.35s ease;
+        }
+        .tab-page.active {
+            display: block;
+        }
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== 游戏页 ===== */
+        .game-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 8px;
+        }
+        .stats .stat {
+            text-align: center;
+        }
+        .stats .stat .num {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f7e05e, #f9b042);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stats .stat .label {
+            font-size: 12px;
+            color: var(--text2);
+            letter-spacing: 1px;
+        }
+        .btn-click {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: none;
+            background: radial-gradient(circle at 30% 30%, #f7e05e, #e8942a);
+            color: #1a1f33;
+            font-size: 24px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 16px 48px rgba(247, 224, 94, 0.25), inset 0 -4px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.08s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            user-select: none;
+        }
+        .btn-click:hover {
+            transform: scale(1.03);
+            box-shadow: 0 20px 56px rgba(247, 224, 94, 0.35);
+        }
+        .btn-click:active {
+            transform: scale(0.94);
+        }
+        .btn-click:disabled {
+            opacity: 0.4;
+            transform: scale(0.95);
+            cursor: not-allowed;
+        }
+        .btn-click .sub {
+            font-size: 13px;
+            font-weight: 500;
+            opacity: 0.7;
+        }
+        .game-hint {
+            margin-top: 18px;
+            color: var(--text2);
+            font-size: 13px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 14px;
+            width: 100%;
+        }
+        .rank-preview {
+            margin-top: 14px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .rank-preview:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(247, 224, 94, 0.15);
+        }
+        .rank-preview .label {
+            color: var(--text2);
+            font-size: 14px;
+        }
+        .rank-preview .value {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .rank-preview .hint {
+            font-size: 12px;
+            color: var(--text2);
+            opacity: 0.6;
+        }
+        .bg-set {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .bg-set label {
+            font-size: 13px;
+            color: var(--text2);
+        }
+        .bg-set input[type="color"] {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 30px;
+            padding: 0;
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+        .bg-set input[type="file"] {
+            display: none;
+        }
+        .bg-set .file-label {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 5px 14px;
+            border-radius: 30px;
+            font-size: 13px;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: var(--transition);
+        }
+        .bg-set .file-label:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .bg-set .reset-bg {
+            background: rgba(255, 255, 255, 0.04);
+            border: none;
+            color: var(--text2);
+            padding: 5px 14px;
+            border-radius: 30px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .bg-set .reset-bg:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* ===== 背包 ===== */
+        .bp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .bp-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .bp-header .count {
+            color: var(--text2);
+            font-size: 14px;
+        }
+        .hero-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        .hero-card {
+            background: var(--card-bg);
+            border-radius: 22px;
+            padding: 10px 6px 12px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: var(--transition);
+            position: relative;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+        .hero-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .hero-card img {
+            width: 100%;
+            aspect-ratio: 1/1.2;
+            object-fit: cover;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.25);
+            margin-bottom: 4px;
+        }
+        .hero-card .hname {
+            font-weight: 700;
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .hero-card .hreal {
+            font-size: 11px;
+            color: var(--text2);
+            margin-top: 1px;
+        }
+        .hero-card .hmeta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text2);
+            margin-top: 4px;
+            padding: 0 2px;
+        }
+        .hero-card .hmeta .level {
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 0 8px;
+            border-radius: 20px;
+        }
+        .hero-card .hmeta .count {
+            font-weight: 600;
+        }
+        .hero-card .btn-promote {
+            margin-top: 4px;
+            padding: 3px 8px;
+            border-radius: 30px;
+            border: none;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            background: linear-gradient(135deg, #f7e05e, #f9b042);
+            color: #1a1f33;
+            width: 100%;
+        }
+        .hero-card .btn-promote:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .hero-card .btn-promote:hover:not(:disabled) {
+            transform: scale(1.02);
+        }
+        .hero-card .btn-promote.coin {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            color: #fff;
+        }
+        /* 品质边框 */
+        .hero-card.quality-gold {
+            border-color: var(--gold);
+            box-shadow: 0 0 24px rgba(255, 215, 0, 0.15);
+        }
+        .hero-card.quality-purple {
+            border-color: var(--purple);
+            box-shadow: 0 0 20px rgba(192, 132, 252, 0.12);
+        }
+        .hero-card.quality-blue {
+            border-color: var(--blue);
+            box-shadow: 0 0 16px rgba(96, 165, 250, 0.1);
+        }
+        .hero-card.quality-green {
+            border-color: var(--green);
+            box-shadow: 0 0 12px rgba(52, 211, 153, 0.08);
+        }
+        .hero-card.quality-white {
+            border-color: var(--white);
+            box-shadow: 0 0 8px rgba(229, 231, 235, 0.05);
+        }
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text2);
+            padding: 40px 0;
+            font-size: 15px;
+        }
+
+        /* ===== 市场 ===== */
+        .mkt-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .mkt-tab {
+            background: transparent;
+            border: none;
+            color: var(--text2);
+            padding: 6px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .mkt-tab.active {
+            background: rgba(247, 224, 94, 0.12);
+            color: var(--gold);
+        }
+        .mkt-tab:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .mkt-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 340px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .mkt-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px 14px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: var(--transition);
+        }
+        .mkt-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .mkt-item img {
+            width: 44px;
+            height: 58px;
+            object-fit: cover;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+        .mkt-item .info {
+            flex: 1;
+            min-width: 0;
+        }
+        .mkt-item .info .name {
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .mkt-item .info .sub {
+            font-size: 12px;
+            color: var(--text2);
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .mkt-item .info .sub .qtag {
+            display: inline-block;
+            padding: 0 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .act-btn {
+            padding: 5px 14px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        .act-btn.buy {
+            background: linear-gradient(135deg, #f7e05e, #f9b042);
+            color: #1a1f33;
+        }
+        .act-btn.buy:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .act-btn.danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        .act-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+        .listing-form {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            margin-bottom: 12px;
+        }
+        .listing-form .row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .listing-form select,
+        .listing-form input {
+            flex: 1;
+            min-width: 100px;
+            padding: 8px 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.04);
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+        }
+        .listing-form select:focus,
+        .listing-form input:focus {
+            border-color: rgba(247, 224, 94, 0.3);
+        }
+        .listing-form select option {
+            background: #1a1f33;
+        }
+        .listing-form .btn {
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            background: linear-gradient(135deg, #f7e05e, #f9b042);
+            color: #1a1f33;
+        }
+        .listing-form .btn:hover {
+            transform: scale(1.03);
+        }
+        .listing-form .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ===== 底部导航 ===== */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 40px;
+            padding: 6px 4px;
+            margin-top: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            flex-shrink: 0;
+        }
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text2);
+            padding: 8px 12px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            justify-content: center;
+        }
+        .nav-btn.active {
+            background: rgba(247, 224, 94, 0.12);
+            color: var(--gold);
+        }
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        /* ===== 弹窗 (通用) ===== */
+        .pop-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(18px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+            animation: fadeIn 0.3s;
+        }
+        .pop-modal {
+            background: #1a1f33;
+            border-radius: 40px;
+            padding: 28px 24px 32px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7);
+        }
+        .pop-modal h2 {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        .pop-modal .sub {
+            color: var(--text2);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .pop-modal .pop-img {
+            width: 100%;
+            max-height: 260px;
+            overflow: hidden;
+            border-radius: 24px;
+            margin-bottom: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .pop-modal .pop-img img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .pop-modal .pop-name {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        .pop-modal .pop-real {
+            font-size: 15px;
+            color: var(--text2);
+            margin-bottom: 4px;
+        }
+        .pop-modal .pop-quality {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: inline-block;
+            padding: 2px 20px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .pop-modal .btn {
+            padding: 12px 40px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #f7e05e, #f9b042);
+            color: #1a1f33;
+        }
+
+        /* ===== 排行榜弹窗 ===== */
+        .rank-modal {
+            max-width: 460px;
+            max-height: 80vh;
+            overflow-y: auto;
+            text-align: left;
+            padding: 24px 20px 20px;
+        }
+        .rank-modal h2 {
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 22px;
+        }
+        .rank-modal .rank-close {
+            float: right;
+            background: transparent;
+            border: none;
+            color: var(--text2);
+            font-size: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+            line-height: 1;
+        }
+        .rank-modal .rank-close:hover {
+            color: #fff;
+            transform: rotate(90deg);
+        }
+        .rank-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .rank-table th {
+            text-align: left;
+            padding: 8px 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            color: var(--text2);
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .rank-table td {
+            padding: 8px 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .rank-table tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .rank-table .me {
+            color: var(--gold);
+            font-weight: 700;
+        }
+        .rank-table .rank-num {
+            font-weight: 600;
+            color: var(--text2);
+            width: 36px;
+        }
+        .rank-table .rank-username {
+            font-weight: 500;
+        }
+        .rank-table .rank-clicks,
+        .rank-table .rank-coins {
+            text-align: right;
+            color: var(--text2);
+        }
+        .rank-table .rank-coins {
+            color: var(--gold);
+        }
+        .empty-rank-msg {
+            text-align: center;
+            color: var(--text2);
+            padding: 30px 0;
+        }
+
+        /* ===== 认证 ===== */
+        .auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            animation: fadeIn 0.25s;
+        }
+        .auth-modal {
+            background: #1e243b;
+            border-radius: 40px;
+            padding: 30px 26px 34px;
+            max-width: 380px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .auth-modal h2 {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        .auth-modal .sub {
+            color: var(--text2);
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+        .auth-modal .form-group {
+            margin-bottom: 14px;
+        }
+        .auth-modal label {
+            display: block;
+            color: var(--text2);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .auth-modal input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.04);
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: var(--transition);
+        }
+        .auth-modal input:focus {
+            border-color: rgba(247, 224, 94, 0.3);
+            box-shadow: 0 0 0 4px rgba(247, 224, 94, 0.05);
+        }
+        .auth-modal .auth-error {
+            color: #f87171;
+            font-size: 14px;
+            margin-top: 10px;
+            background: rgba(239, 68, 68, 0.08);
+            padding: 8px 14px;
+            border-radius: 16px;
+            display: none;
+        }
+        .auth-modal .auth-error.show {
+            display: block;
+        }
+        .auth-modal .auth-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+        .auth-modal .auth-actions .btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        .auth-modal .toggle-mode {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text2);
+            cursor: pointer;
+        }
+        .auth-modal .toggle-mode strong {
+            color: var(--gold);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 420px) {
+            .app {
+                padding: 12px 10px 8px;
+                border-radius: 32px;
+                max-height: 100vh;
+                height: 100vh;
+            }
+            .btn-click {
+                width: 130px;
+                height: 130px;
+                font-size: 20px;
+            }
+            .stats .stat .num {
+                font-size: 22px;
+            }
+            .hero-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+            .mkt-item {
+                padding: 8px 10px;
+            }
+            .nav-btn {
+                font-size: 12px;
+                padding: 6px 8px;
+            }
+            .pop-modal {
+                padding: 20px 16px 24px;
+            }
+            .listing-form .row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .listing-form select,
+            .listing-form input {
+                min-width: auto;
+            }
+            .hero-card .btn-promote {
+                font-size: 9px;
+                padding: 2px 6px;
+            }
+            .rank-modal {
+                padding: 16px 12px;
+                max-width: 100%;
+            }
+            .rank-table {
+                font-size: 12px;
+            }
+            .rank-table th,
+            .rank-table td {
+                padding: 6px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app" id="app">
+
+        <!-- ===== 顶栏 ===== -->
+        <header class="header">
+            <div class="logo">
+                <span>✨</span>
+                <h1>星穹英雄</h1>
+            </div>
+            <div class="user-wrap" id="userWrap">
+                <span class="greet">👋</span>
+                <span class="uname" id="unameDisplay">游客</span>
+                <button class="btn-sm btn-gold" id="authBtn">登录</button>
+            </div>
+        </header>
+
+        <!-- ===== 内容 ===== -->
+        <div class="content" id="content">
+
+            <!-- 游戏 -->
+            <div class="tab-page active" id="tabGame">
+                <div class="game-wrap">
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="num" id="clickNum">0</div>
+                            <div class="label">点击</div>
+                        </div>
+                        <div class="stat">
+                            <div class="num" id="coinNum">0</div>
+                            <div class="label">🪙 金币</div>
+                        </div>
+                    </div>
+                    <button class="btn-click" id="clickBtn">
+                        👆
+                        <span class="sub">点击</span>
+                    </button>
+                    <div class="game-hint">
+                        💡 每100次点击获得英雄 · <span id="rankHint">登录后排名</span>
+                    </div>
+                    <div class="rank-preview" id="rankPreview">
+                        <span class="label">🏅 排名</span>
+                        <span class="value" id="rankVal">—</span>
+                        <span class="hint">👆 点击查看</span>
+                    </div>
+                    <div class="bg-set">
+                        <label>🎨 背景</label>
+                        <input type="color" id="bgColor" value="#0b0e1a" />
+                        <label class="file-label" for="bgUpload">🖼️ 图片</label>
+                        <input type="file" id="bgUpload" accept="image/*" />
+                        <button class="reset-bg" id="resetBg">✕ 重置</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 背包 -->
+            <div class="tab-page" id="tabBackpack">
+                <div class="bp-header">
+                    <h2>🎒 背包</h2>
+                    <span class="count" id="heroCount">0 位</span>
+                </div>
+                <div class="hero-grid" id="heroGrid">
+                    <div class="empty-state">还没有英雄，继续点击吧！</div>
+                </div>
+            </div>
+
+            <!-- 市场 -->
+            <div class="tab-page" id="tabMarket">
+                <div class="mkt-tabs" id="mktTabsContainer">
+                    <button class="mkt-tab active" data-mkt="buy">🛒 购买</button>
+                    <button class="mkt-tab" data-mkt="my">📤 我的上架</button>
+                    <button class="mkt-tab" data-mkt="list">📦 上架</button>
+                </div>
+                <div class="mkt-list" id="mktList">
+                    <!-- 动态 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 底部导航 ===== -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-tab="tabGame">🎯 游戏</button>
+            <button class="nav-btn" data-tab="tabBackpack">🎒 背包</button>
+            <button class="nav-btn" data-tab="tabMarket">🏪 市场</button>
+        </nav>
+    </div>
+
+    <!-- ===== 新英雄弹窗 ===== -->
+    <div class="pop-overlay" id="popOverlay" style="display:none;">
+        <div class="pop-modal">
+            <h2>✨ 新英雄</h2>
+            <div class="sub">你获得了</div>
+            <div class="pop-img">
+                <img id="popImg" src="" alt="英雄" />
+            </div>
+            <div class="pop-name" id="popName">—</div>
+            <div class="pop-real" id="popReal">—</div>
+            <div class="pop-quality" id="popQuality">—</div>
+            <button class="btn" id="popClose">太棒了！</button>
+        </div>
+    </div>
+
+    <!-- ===== 排行榜弹窗 ===== -->
+    <div class="pop-overlay" id="rankOverlay" style="display:none;">
+        <div class="pop-modal rank-modal">
+            <button class="rank-close" id="rankClose">✕</button>
+            <h2>🏆 排行榜</h2>
+            <div id="rankListContainer">
+                <!-- 由js动态填充 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 认证 ===== -->
+    <div class="auth-overlay" id="authOverlay" style="display:none;">
+        <div class="auth-modal">
+            <h2 id="authTitle">登录</h2>
+            <div class="sub" id="authSub">继续你的旅程</div>
+            <div class="form-group">
+                <label>用户名</label>
+                <input type="text" id="authUser" placeholder="输入用户名" />
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="authPass" placeholder="输入密码" />
+            </div>
+            <div class="auth-error" id="authError"></div>
+            <div class="auth-actions">
+                <button class="btn btn-gold" id="authSubmit" style="flex:1;">登录</button>
+                <button class="btn" id="authCancel" style="flex:1;background:rgba(255,255,255,0.06);color:#fff;">取消</button>
+            </div>
+            <div class="toggle-mode" id="authToggle">
+                没有账号？ <strong>立即注册</strong>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        //  数据层 (DataService) - 支持双条件晋级
+        // ================================================================
+        const DataService = {
+            DB_KEY: 'clickHeroDB',
+
+            _getDB() {
+                const raw = localStorage.getItem(this.DB_KEY);
+                if (!raw) return { users: {}, market: [] };
+                try { return JSON.parse(raw); } catch { return { users: {}, market: [] }; }
+            },
+            _saveDB(db) { localStorage.setItem(this.DB_KEY, JSON.stringify(db)); },
+
+            getRankedUsers() {
+                const db = this._getDB();
+                const u = db.users || {};
+                return Object.entries(u).map(([name, data]) => ({
+                    username: name,
+                    clicks: data.clicks || 0,
+                    coins: data.coins || 0,
+                    password: data.password || '',
+                    heroes: data.heroes || {},
+                    bgColor: data.bgColor || '#0b0e1a',
+                    bgImage: data.bgImage || '',
+                })).sort((a, b) => b.clicks - a.clicks);
+            },
+
+            getUser(username) {
+                const db = this._getDB();
+                const u = db.users?.[username];
+                if (!u) return null;
+                const heroes = u.heroes || {};
+                const newHeroes = {};
+                for (let [id, val] of Object.entries(heroes)) {
+                    if (typeof val === 'number') {
+                        newHeroes[id] = { count: val, level: 1 };
+                    } else {
+                        newHeroes[id] = { count: val.count || 0, level: val.level || 1 };
+                    }
+                }
+                return {
+                    username,
+                    clicks: u.clicks || 0,
+                    coins: u.coins || 0,
+                    password: u.password || '',
+                    heroes: newHeroes,
+                    bgColor: u.bgColor || '#0b0e1a',
+                    bgImage: u.bgImage || '',
+                };
+            },
+
+            saveUser(username, data) {
+                const db = this._getDB();
+                if (!db.users) db.users = {};
+                const exist = db.users[username] || {};
+                db.users[username] = {
+                    password: data.password !== undefined ? data.password : exist.password || '',
+                    clicks: data.clicks !== undefined ? data.clicks : exist.clicks || 0,
+                    coins: data.coins !== undefined ? data.coins : exist.coins || 0,
+                    heroes: data.heroes !== undefined ? data.heroes : exist.heroes || {},
+                    bgColor: data.bgColor !== undefined ? data.bgColor : exist.bgColor || '#0b0e1a',
+                    bgImage: data.bgImage !== undefined ? data.bgImage : exist.bgImage || '',
+                };
+                this._saveDB(db);
+            },
+
+            incrementClickAndCoin(username) {
+                const db = this._getDB();
+                if (!db.users?.[username]) return null;
+                db.users[username].clicks = (db.users[username].clicks || 0) + 1;
+                db.users[username].coins = (db.users[username].coins || 0) + 1;
+                this._saveDB(db);
+                return this.getUser(username);
+            },
+
+            addHero(username, heroId) {
+                const db = this._getDB();
+                if (!db.users?.[username]) return false;
+                const heroes = db.users[username].heroes || {};
+                if (typeof heroes[heroId] === 'number') {
+                    heroes[heroId] = { count: heroes[heroId] + 1, level: 1 };
+                } else if (heroes[heroId]) {
+                    heroes[heroId].count = (heroes[heroId].count || 0) + 1;
+                } else {
+                    heroes[heroId] = { count: 1, level: 1 };
+                }
+                db.users[username].heroes = heroes;
+                this._saveDB(db);
+                return true;
+            },
+
+            removeHeroCount(username, heroId, amount = 1) {
+                const db = this._getDB();
+                if (!db.users?.[username]) return false;
+                const heroes = db.users[username].heroes || {};
+                if (!heroes[heroId]) return false;
+                const entry = heroes[heroId];
+                if (typeof entry === 'number') {
+                    if (entry < amount) return false;
+                    const newCount = entry - amount;
+                    if (newCount <= 0) delete heroes[heroId];
+                    else heroes[heroId] = { count: newCount, level: 1 };
+                } else {
+                    if (entry.count < amount) return false;
+                    entry.count -= amount;
+                    if (entry.count <= 0) delete heroes[heroId];
+                }
+                db.users[username].heroes = heroes;
+                this._saveDB(db);
+                return true;
+            },
+
+            removeCoins(username, amount) {
+                const db = this._getDB();
+                if (!db.users?.[username]) return false;
+                if ((db.users[username].coins || 0) < amount) return false;
+                db.users[username].coins = (db.users[username].coins || 0) - amount;
+                this._saveDB(db);
+                return true;
+            },
+
+            promoteHero(username, heroId, cost) {
+                const db = this._getDB();
+                if (!db.users?.[username]) return false;
+                const user = db.users[username];
+                const heroes = user.heroes || {};
+                const entry = heroes[heroId];
+                if (!entry) return false;
+                const count = typeof entry === 'number' ? entry : (entry.count || 0);
+                const level = typeof entry === 'number' ? 1 : (entry.level || 1);
+                if (count < 5) return false;
+                if (level >= 10) return false;
+                if ((user.coins || 0) < cost) return false;
+                let newCount = count - 5;
+                const newLevel = level + 1;
+                if (newCount <= 0) {
+                    delete heroes[heroId];
+                } else {
+                    heroes[heroId] = { count: newCount, level: newLevel };
+                }
+                user.coins = (user.coins || 0) - cost;
+                db.users[username].heroes = heroes;
+                this._saveDB(db);
+                return true;
+            },
+
+            // 市场
+            getMarketListings() {
+                const db = this._getDB();
+                return db.market || [];
+            },
+            saveMarketListings(listings) {
+                const db = this._getDB();
+                db.market = listings;
+                this._saveDB(db);
+            },
+            addListing(listing) {
+                const listings = this.getMarketListings();
+                listing.id = 'l_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+                listings.push(listing);
+                this.saveMarketListings(listings);
+                return listing.id;
+            },
+            removeListing(listingId) {
+                let listings = this.getMarketListings();
+                listings = listings.filter(l => l.id !== listingId);
+                this.saveMarketListings(listings);
+            },
+            getListing(listingId) {
+                const listings = this.getMarketListings();
+                return listings.find(l => l.id === listingId) || null;
+            },
+
+            updateBackground(username, color, image) {
+                const db = this._getDB();
+                if (!db.users?.[username]) return false;
+                if (color !== undefined) db.users[username].bgColor = color;
+                if (image !== undefined) db.users[username].bgImage = image;
+                this._saveDB(db);
+                return true;
+            }
+        };
+
+        // ================================================================
+        //  认证
+        // ================================================================
+        const AuthService = {
+            SESSION_KEY: 'clickHeroSession',
+
+            getCurrentUser() {
+                const raw = localStorage.getItem(this.SESSION_KEY);
+                if (!raw) return null;
+                try {
+                    const { username } = JSON.parse(raw);
+                    return DataService.getUser(username);
+                } catch { return null; }
+            },
+
+            setCurrentUser(username) {
+                if (username) localStorage.setItem(this.SESSION_KEY, JSON.stringify({ username }));
+                else localStorage.removeItem(this.SESSION_KEY);
+            },
+
+            login(username, password) {
+                const user = DataService.getUser(username);
+                if (!user) return { success: false, message: '用户不存在' };
+                if (user.password !== password) return { success: false, message: '密码错误' };
+                this.setCurrentUser(username);
+                return { success: true, user };
+            },
+
+            register(username, password) {
+                if (DataService.getUser(username)) {
+                    return { success: false, message: '用户名已存在' };
+                }
+                DataService.saveUser(username, { password, clicks: 0, coins: 0, heroes: {}, bgColor: '#0b0e1a',
+                    bgImage: '' });
+                this.setCurrentUser(username);
+                return { success: true, user: DataService.getUser(username) };
+            },
+
+            logout() { this.setCurrentUser(null); },
+
+            validate(username, password) {
+                if (!username || !password) return { valid: false, message: '请填写完整' };
+                if (username.length < 2 || username.length > 20) return { valid: false,
+                    message: '用户名 2-20 字符' };
+                if (password.length < 3) return { valid: false, message: '密码至少 3 字符' };
+                return { valid: true };
+            }
+        };
+
+        // ================================================================
+        //  游戏服务 (130+ 英雄, 双条件晋级)
+        // ================================================================
+        const GameService = {
+            // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+            //  ★★★ 所有英雄在这里静态定义，您可以任意增删改 ★★★
+            //  每个英雄对象: { name, realName, quality, image }
+            //  品质: 'gold' | 'purple' | 'blue' | 'green' | 'white'
+            //  立绘: 网络URL或相对路径 (例如 './assets/hero.png')
+            // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+            HEROES: [
+                // ===== 传说 (金色) =====
+                { name: '星之刃', realName: '艾莉西亚', quality: 'gold', image: 'https://picsum.photos/seed/starblade/400/500' },
+                { name: '龙之怒', realName: '伊莎贝拉', quality: 'gold', image: 'https://picsum.photos/seed/dragonfury/400/500' },
+                { name: '圣光之翼', realName: '塞拉菲娜', quality: 'gold', image: 'https://picsum.photos/seed/holywings/400/500' },
+                { name: '暗影之刺', realName: '莉莉安娜', quality: 'gold', image: 'https://picsum.photos/seed/shadowsting/400/500' },
+                { name: '苍穹之怒', realName: '芙蕾雅', quality: 'gold', image: 'https://picsum.photos/seed/skyrage/400/500' },
+                { name: '永恒之焰', realName: '克洛伊', quality: 'gold', image: 'https://picsum.photos/seed/eternalflame/400/500' },
+
+                // ===== 史诗 (紫色) =====
+                { name: '月之影', realName: '林月', quality: 'purple', image: 'https://picsum.photos/seed/moonshadow/400/500' },
+                { name: '幻灵之歌', realName: '莉莉安娜', quality: 'purple', image: 'https://picsum.photos/seed/phantomsong/400/500' },
+                { name: '暗影之牙', realName: '瑞雯', quality: 'purple', image: 'https://picsum.photos/seed/shadowfang/400/500' },
+                { name: '霜雪之心', realName: '诺拉', quality: 'purple', image: 'https://picsum.photos/seed/frostheart/400/500' },
+                { name: '雷霆之怒', realName: '索菲亚', quality: 'purple', image: 'https://picsum.photos/seed/thunderfury/400/500' },
+                { name: '风之语', realName: '艾琳', quality: 'purple', image: 'https://picsum.photos/seed/windwhisper/400/500' },
+                { name: '烈焰之舞', realName: '莫妮卡', quality: 'purple', image: 'https://picsum.photos/seed/firedance/400/500' },
+                { name: '大地之盾', realName: '安吉拉', quality: 'purple', image: 'https://picsum.photos/seed/earthshield/400/500' },
+                { name: '流水之灵', realName: '薇拉', quality: 'purple', image: 'https://picsum.photos/seed/waterspirit/400/500' },
+                { name: '翠绿之箭', realName: '希拉', quality: 'purple', image: 'https://picsum.photos/seed/greenarrow/400/500' },
+                { name: '晨光之辉', realName: '梅', quality: 'purple', image: 'https://picsum.photos/seed/morninglight/400/500' },
+                { name: '夜幕之影', realName: '阿莉莎', quality: 'purple', image: 'https://picsum.photos/seed/nightshadow/400/500' },
+
+                // ===== 稀有 (蓝色) =====
+                { name: '星辰之翼', realName: '露西娅', quality: 'blue', image: 'https://picsum.photos/seed/starrywings/400/500' },
+                { name: '月光之舞', realName: '卡米拉', quality: 'blue', image: 'https://picsum.photos/seed/moondance/400/500' },
+                { name: '太阳之辉', realName: '塞琳娜', quality: 'blue', image: 'https://picsum.photos/seed/sunshine/400/500' },
+                { name: '暗夜之刃', realName: '艾米莉亚', quality: 'blue', image: 'https://picsum.photos/seed/nightblade/400/500' },
+                { name: '雷霆之击', realName: '爱丽丝', quality: 'blue', image: 'https://picsum.photos/seed/thunderstrike/400/500' },
+                { name: '冰霜之箭', realName: '朱莉安娜', quality: 'blue', image: 'https://picsum.photos/seed/frostarrow/400/500' },
+                { name: '火焰之灵', realName: '玛丽安娜', quality: 'blue', image: 'https://picsum.photos/seed/firespirit/400/500' },
+                { name: '自然之息', realName: '克里斯蒂娜', quality: 'blue', image: 'https://picsum.photos/seed/naturebreath/400/500' },
+                { name: '风暴之眼', realName: '艾琳娜', quality: 'blue', image: 'https://picsum.photos/seed/stormeye/400/500' },
+                { name: '大地之灵', realName: '维多利亚', quality: 'blue', image: 'https://picsum.photos/seed/earthspirit/400/500' },
+                { name: '海洋之心', realName: '阿黛尔', quality: 'blue', image: 'https://picsum.photos/seed/oceanheart/400/500' },
+                { name: '天空之翼', realName: '伊丽莎白', quality: 'blue', image: 'https://picsum.photos/seed/skywings/400/500' },
+                { name: '黄昏之影', realName: '凯瑟琳', quality: 'blue', image: 'https://picsum.photos/seed/twilightshadow/400/500' },
+                { name: '黎明之光', realName: '玛格丽特', quality: 'blue', image: 'https://picsum.photos/seed/dawnlight/400/500' },
+                { name: '深渊之眼', realName: '安娜', quality: 'blue', image: 'https://picsum.photos/seed/abysseye/400/500' },
+                { name: '极光之刃', realName: '玛丽亚', quality: 'blue', image: 'https://picsum.photos/seed/aurorablade/400/500' },
+                { name: '混沌之焰', realName: '艾莉森', quality: 'blue', image: 'https://picsum.photos/seed/chaosflame/400/500' },
+                { name: '秩序之盾', realName: '梅根', quality: 'blue', image: 'https://picsum.photos/seed/ordershield/400/500' },
+                { name: '生命之泉', realName: '布鲁克', quality: 'blue', image: 'https://picsum.photos/seed/lifespring/400/500' },
+                { name: '死亡之息', realName: '佩奇', quality: 'blue', image: 'https://picsum.photos/seed/deathbreath/400/500' },
+                { name: '光辉之翼', realName: '莎拉', quality: 'blue', image: 'https://picsum.photos/seed/radiantwings/400/500' },
+                { name: '暗黑之刃', realName: '杰西卡', quality: 'blue', image: 'https://picsum.photos/seed/darkblade/400/500' },
+                { name: '圣洁之光', realName: '汉娜', quality: 'blue', image: 'https://picsum.photos/seed/holylight/400/500' },
+                { name: '永恒之盾', realName: '艾米', quality: 'blue', image: 'https://picsum.photos/seed/eternalshield/400/500' },
+                { name: '虚空之影', realName: '瑞秋', quality: 'blue', image: 'https://picsum.photos/seed/voidshadow/400/500' },
+                { name: '星辰之辉', realName: '珍妮', quality: 'blue', image: 'https://picsum.photos/seed/starshine/400/500' },
+                { name: '月之精灵', realName: '凯特', quality: 'blue', image: 'https://picsum.photos/seed/moonelf/400/500' },
+                { name: '日之使者', realName: '艾玛', quality: 'blue', image: 'https://picsum.photos/seed/sunmessenger/400/500' },
+                { name: '风之游侠', realName: '奥利维亚', quality: 'blue', image: 'https://picsum.photos/seed/windranger/400/500' },
+
+                // ===== 精良 (绿色) =====
+                { name: '翠绿之叶', realName: '艾薇', quality: 'green', image: 'https://picsum.photos/seed/greenleaf/400/500' },
+                { name: '碧蓝之水', realName: '哈珀', quality: 'green', image: 'https://picsum.photos/seed/bluewater/400/500' },
+                { name: '赤红之火', realName: '埃拉', quality: 'green', image: 'https://picsum.photos/seed/redfire/400/500' },
+                { name: '金黄之沙', realName: '莉莉', quality: 'green', image: 'https://picsum.photos/seed/goldsand/400/500' },
+                { name: '纯白之雪', realName: '夏洛特', quality: 'green', image: 'https://picsum.photos/seed/whitesnow/400/500' },
+                { name: '墨黑之影', realName: '米娅', quality: 'green', image: 'https://picsum.photos/seed/blackshadow/400/500' },
+                { name: '银白之月', realName: '艾拉', quality: 'green', image: 'https://picsum.photos/seed/silvermoon/400/500' },
+                { name: '琥珀之瞳', realName: '阿瑞亚', quality: 'green', image: 'https://picsum.photos/seed/ambereye/400/500' },
+                { name: '翡翠之梦', realName: '塞西莉亚', quality: 'green', image: 'https://picsum.photos/seed/jade dream/400/500' },
+                { name: '珍珠之泪', realName: '茱莉亚', quality: 'green', image: 'https://picsum.photos/seed/pearltear/400/500' },
+                { name: '珊瑚之灵', realName: '瓦莱丽', quality: 'green', image: 'https://picsum.photos/seed/coral spirit/400/500' },
+                { name: '水晶之心', realName: '劳拉', quality: 'green', image: 'https://picsum.photos/seed/crystalheart/400/500' },
+                { name: '月光之翼', realName: '娜塔莉', quality: 'green', image: 'https://picsum.photos/seed/moonlightwings/400/500' },
+                { name: '日光之刃', realName: '格蕾丝', quality: 'green', image: 'https://picsum.photos/seed/sunblade/400/500' },
+                { name: '星光之袍', realName: '罗斯', quality: 'green', image: 'https://picsum.photos/seed/starrobe/400/500' },
+                { name: '暗影之幕', realName: '玛丽', quality: 'green', image: 'https://picsum.photos/seed/shadowveil/400/500' },
+                { name: '自然之怒', realName: '莫莉', quality: 'green', image: 'https://picsum.photos/seed/naturewrath/400/500' },
+                { name: '风暴之盾', realName: '露西', quality: 'green', image: 'https://picsum.photos/seed/stormshield/400/500' },
+                { name: '火焰之心', realName: '安妮', quality: 'green', image: 'https://picsum.photos/seed/fireheart/400/500' },
+                { name: '冰霜之灵', realName: '莱利', quality: 'green', image: 'https://picsum.photos/seed/frostspirit/400/500' },
+                { name: '雷霆之锤', realName: '佐伊', quality: 'green', image: 'https://picsum.photos/seed/thunderhammer/400/500' },
+                { name: '大地之怒', realName: '吉安娜', quality: 'green', image: 'https://picsum.photos/seed/earthwrath/400/500' },
+                { name: '海洋之怒', realName: '凯莉', quality: 'green', image: 'https://picsum.photos/seed/oceanwrath/400/500' },
+                { name: '天空之怒', realName: '尼娜', quality: 'green', image: 'https://picsum.photos/seed/skywrath/400/500' },
+                { name: '森林之灵', realName: '安布尔', quality: 'green', image: 'https://picsum.photos/seed/forestspirit/400/500' },
+                { name: '沙漠之风', realName: '海莉', quality: 'green', image: 'https://picsum.photos/seed/desertwind/400/500' },
+                { name: '极光之芒', realName: '克里斯汀', quality: 'green', image: 'https://picsum.photos/seed/aurorabeam/400/500' },
+                { name: '彩虹之桥', realName: '杰奎琳', quality: 'green', image: 'https://picsum.photos/seed/rainbowbridge/400/500' },
+                { name: '黄昏之诗', realName: '阿什莉', quality: 'green', image: 'https://picsum.photos/seed/twilightpoem/400/500' },
+                { name: '黎明之曲', realName: '梅丽莎', quality: 'green', image: 'https://picsum.photos/seed/dawnsong/400/500' },
+
+                // ===== 普通 (白色) =====
+                { name: '小石头', realName: '安娜', quality: 'white', image: 'https://picsum.photos/seed/pebble/400/500' },
+                { name: '微风', realName: '艾米', quality: 'white', image: 'https://picsum.photos/seed/breeze/400/500' },
+                { name: '雨滴', realName: '莎拉', quality: 'white', image: 'https://picsum.photos/seed/raindrop/400/500' },
+                { name: '木叶', realName: '诺拉', quality: 'white', image: 'https://picsum.photos/seed/woodleaf/400/500' },
+                { name: '雪花', realName: '奥利维亚', quality: 'white', image: 'https://picsum.photos/seed/snowflake/400/500' },
+                { name: '露珠', realName: '帕梅拉', quality: 'white', image: 'https://picsum.photos/seed/dewdrop/400/500' },
+                { name: '尘土', realName: '昆汀', quality: 'white', image: 'https://picsum.photos/seed/dust/400/500' },
+                { name: '火焰', realName: '瑞贝卡', quality: 'white', image: 'https://picsum.photos/seed/flame/400/500' },
+                { name: '水流', realName: '斯蒂芬妮', quality: 'white', image: 'https://picsum.photos/seed/waterflow/400/500' },
+                { name: '岩石', realName: '特蕾莎', quality: 'white', image: 'https://picsum.photos/seed/rock/400/500' },
+                { name: '小草', realName: '乌苏拉', quality: 'white', image: 'https://picsum.photos/seed/grass/400/500' },
+                { name: '花朵', realName: '维罗妮卡', quality: 'white', image: 'https://picsum.photos/seed/flower/400/500' },
+                { name: '果实', realName: '温迪', quality: 'white', image: 'https://picsum.photos/seed/fruit/400/500' },
+                { name: '种子', realName: '克洛伊', quality: 'white', image: 'https://picsum.photos/seed/seed/400/500' },
+                { name: '嫩芽', realName: '伊芙', quality: 'white', image: 'https://picsum.photos/seed/sprout/400/500' },
+                { name: '树根', realName: '费莉西亚', quality: 'white', image: 'https://picsum.photos/seed/root/400/500' },
+                { name: '树皮', realName: '葛瑞丝', quality: 'white', image: 'https://picsum.photos/seed/bark/400/500' },
+                { name: '羽毛', realName: '霍莉', quality: 'white', image: 'https://picsum.photos/seed/feather/400/500' },
+                { name: '鳞片', realName: '艾比', quality: 'white', image: 'https://picsum.photos/seed/scale/400/500' },
+                { name: '爪子', realName: '朱莉', quality: 'white', image: 'https://picsum.photos/seed/claw/400/500' },
+                { name: '牙齿', realName: '凯拉', quality: 'white', image: 'https://picsum.photos/seed/tooth/400/500' },
+                { name: '骨头', realName: '琳达', quality: 'white', image: 'https://picsum.photos/seed/bone/400/500' },
+                { name: '血液', realName: '玛雅', quality: 'white', image: 'https://picsum.photos/seed/blood/400/500' },
+                { name: '汗水', realName: '娜塔莎', quality: 'white', image: 'https://picsum.photos/seed/sweat/400/500' },
+                { name: '泪水', realName: '奥黛丽', quality: 'white', image: 'https://picsum.photos/seed/tear/400/500' },
+                { name: '笑容', realName: '佩内洛普', quality: 'white', image: 'https://picsum.photos/seed/smile/400/500' },
+                { name: '拥抱', realName: '奎因', quality: 'white', image: 'https://picsum.photos/seed/hug/400/500' },
+                { name: '亲吻', realName: '蕾切尔', quality: 'white', image: 'https://picsum.photos/seed/kiss/400/500' },
+                { name: '月光', realName: '萨曼莎', quality: 'white', image: 'https://picsum.photos/seed/moonlight/400/500' },
+                { name: '日光', realName: '塔玛拉', quality: 'white', image: 'https://picsum.photos/seed/sunlight/400/500' },
+                { name: '星光', realName: '乌玛', quality: 'white', image: 'https://picsum.photos/seed/starlight/400/500' },
+            ],
+
+            // ----- 品质配置 (固定) -----
+            QUALITIES: [
+                { key: 'gold', label: '传说', color: '#ffd700', prob: 0.05 },
+                { key: 'purple', label: '史诗', color: '#c084fc', prob: 0.10 },
+                { key: 'blue', label: '稀有', color: '#60a5fa', prob: 0.20 },
+                { key: 'green', label: '精良', color: '#34d399', prob: 0.30 },
+                { key: 'white', label: '普通', color: '#e5e7eb', prob: 0.35 },
+            ],
+
+            // ----- 初始化英雄池 -----
+            initHeroPool() {
+                this.HEROES = this.HEROES.map((h, idx) => {
+                    if (!h.id) {
+                        h.id = 'h_' + idx + '_' + h.name + '_' + Math.random().toString(36).substr(2, 4);
+                    }
+                    return h;
+                });
+                this._poolReady = true;
+            },
+
+            getHeroPool() {
+                if (!this._poolReady) this.initHeroPool();
+                return this.HEROES;
+            },
+
+            getHeroesByQuality() {
+                const pool = this.getHeroPool();
+                const groups = {};
+                for (let q of this.QUALITIES) groups[q.key] = [];
+                for (let h of pool) groups[h.quality].push(h);
+                return groups;
+            },
+
+            drawHero() {
+                const rand = Math.random();
+                let chosenQuality = 'white';
+                let cum = 0;
+                for (let q of this.QUALITIES) {
+                    cum += q.prob;
+                    if (rand <= cum) { chosenQuality = q.key; break; }
+                }
+                const groups = this.getHeroesByQuality();
+                const pool = groups[chosenQuality] || [];
+                if (pool.length === 0) {
+                    const all = this.getHeroPool();
+                    return all[Math.floor(Math.random() * all.length)];
+                }
+                return pool[Math.floor(Math.random() * pool.length)];
+            },
+
+            getQualityLabel(key) {
+                const q = this.QUALITIES.find(q => q.key === key);
+                return q ? q.label : '普通';
+            },
+            getQualityColor(key) {
+                const q = this.QUALITIES.find(q => q.key === key);
+                return q ? q.color : '#e5e7eb';
+            },
+
+            getHeroInfo(heroId) {
+                return this.getHeroPool().find(h => h.id === heroId) || null;
+            },
+
+            // 晋级金币消耗：1000^(等级+1)
+            getPromoteCost(level) {
+                return Math.pow(1000, level + 1);
+            },
+
+            // ----- 点击 -----
+            handleClick(username) {
+                if (!username) return null;
+                const updated = DataService.incrementClickAndCoin(username);
+                if (!updated) return null;
+                const clicks = updated.clicks;
+                if (clicks % 100 !== 0) {
+                    return { user: updated, newHero: null };
+                }
+                const hero = this.drawHero();
+                DataService.addHero(username, hero.id);
+                const finalUser = DataService.getUser(username);
+                return { user: finalUser, newHero: hero };
+            },
+
+            // ----- 统一晋级 (双条件) -----
+            promoteHero(username, heroId) {
+                const user = DataService.getUser(username);
+                if (!user) return { success: false, message: '用户不存在' };
+                const entry = user.heroes[heroId];
+                if (!entry) return { success: false, message: '没有该英雄' };
+                const count = entry.count || 0;
+                const level = entry.level || 1;
+                if (count < 5) return { success: false, message: `需要至少5个相同英雄，当前 ${count} 个` };
+                if (level >= 10) return { success: false, message: '已达最高等级' };
+                const cost = this.getPromoteCost(level);
+                if (user.coins < cost) return { success: false, message: `金币不足，需要 ${cost} 金币` };
+                const success = DataService.promoteHero(username, heroId, cost);
+                if (!success) return { success: false, message: '晋级失败，请检查资源' };
+                const finalUser = DataService.getUser(username);
+                return { success: true, user: finalUser, newLevel: level + 1, cost };
+            },
+
+            // ----- 市场 -----
+            listHero(username, heroId, price) {
+                if (price < 1) return { success: false, message: '价格必须 ≥ 1' };
+                const user = DataService.getUser(username);
+                if (!user) return { success: false, message: '用户不存在' };
+                const entry = user.heroes[heroId];
+                if (!entry || entry.count < 1) return { success: false, message: '没有该英雄' };
+                DataService.removeHeroCount(username, heroId, 1);
+                const heroInfo = this.getHeroInfo(heroId);
+                const listing = {
+                    seller: username,
+                    heroId: heroId,
+                    price: Math.floor(price),
+                    level: entry.level || 1,
+                    timestamp: Date.now(),
+                };
+                const id = DataService.addListing(listing);
+                const finalUser = DataService.getUser(username);
+                return { success: true, user: finalUser, listingId: id };
+            },
+
+            unlistHero(username, listingId) {
+                const listing = DataService.getListing(listingId);
+                if (!listing) return { success: false, message: '商品不存在' };
+                if (listing.seller !== username) return { success: false, message: '不是你上架的' };
+                DataService.removeListing(listingId);
+                DataService.addHero(username, listing.heroId);
+                const finalUser = DataService.getUser(username);
+                return { success: true, user: finalUser };
+            },
+
+            buyHero(buyerUsername, listingId) {
+                const listing = DataService.getListing(listingId);
+                if (!listing) return { success: false, message: '商品已下架' };
+                if (listing.seller === buyerUsername) return { success: false, message: '不能购买自己的商品' };
+
+                const buyer = DataService.getUser(buyerUsername);
+                if (!buyer) return { success: false, message: '买家不存在' };
+                if (buyer.coins < listing.price) return { success: false, message: '金币不足' };
+
+                const seller = DataService.getUser(listing.seller);
+                if (!seller) {
+                    DataService.removeListing(listingId);
+                    return { success: false, message: '卖家数据异常' };
+                }
+
+                const buyerNewCoins = buyer.coins - listing.price;
+                const sellerNewCoins = seller.coins + listing.price;
+
+                const db = DataService._getDB();
+                const buyerHeroes = db.users[buyerUsername].heroes || {};
+                if (buyerHeroes[listing.heroId]) {
+                    if (typeof buyerHeroes[listing.heroId] === 'number') {
+                        buyerHeroes[listing.heroId] = { count: buyerHeroes[listing.heroId] + 1, level: listing.level };
+                    } else {
+                        buyerHeroes[listing.heroId].count = (buyerHeroes[listing.heroId].count || 0) + 1;
+                        buyerHeroes[listing.heroId].level = listing.level;
+                    }
+                } else {
+                    buyerHeroes[listing.heroId] = { count: 1, level: listing.level };
+                }
+                db.users[buyerUsername].heroes = buyerHeroes;
+                db.users[buyerUsername].coins = buyerNewCoins;
+                db.users[listing.seller].coins = sellerNewCoins;
+                DataService.removeListing(listingId);
+                DataService._saveDB(db);
+
+                const finalBuyer = DataService.getUser(buyerUsername);
+                const finalSeller = DataService.getUser(listing.seller);
+                return {
+                    success: true,
+                    buyer: finalBuyer,
+                    seller: finalSeller,
+                    heroId: listing.heroId,
+                    level: listing.level,
+                };
+            },
+
+            getLeaderboard() {
+                return DataService.getRankedUsers();
+            },
+
+            getUserRank(username) {
+                const ranked = this.getLeaderboard();
+                const idx = ranked.findIndex(u => u.username === username);
+                return idx === -1 ? null : idx + 1;
+            }
+        };
+
+        // ================================================================
+        //  UI 控制器
+        // ================================================================
+        const UI = {
+            els: {},
+
+            init() {
+                GameService.initHeroPool();
+
+                this.els = {
+                    unameDisplay: document.getElementById('unameDisplay'),
+                    authBtn: document.getElementById('authBtn'),
+                    clickNum: document.getElementById('clickNum'),
+                    coinNum: document.getElementById('coinNum'),
+                    clickBtn: document.getElementById('clickBtn'),
+                    rankVal: document.getElementById('rankVal'),
+                    rankHint: document.getElementById('rankHint'),
+                    rankPreview: document.getElementById('rankPreview'),
+                    heroGrid: document.getElementById('heroGrid'),
+                    heroCount: document.getElementById('heroCount'),
+                    mktList: document.getElementById('mktList'),
+                    mktTabs: document.querySelectorAll('#mktTabsContainer .mkt-tab'),
+                    authOverlay: document.getElementById('authOverlay'),
+                    authTitle: document.getElementById('authTitle'),
+                    authSub: document.getElementById('authSub'),
+                    authUser: document.getElementById('authUser'),
+                    authPass: document.getElementById('authPass'),
+                    authSubmit: document.getElementById('authSubmit'),
+                    authCancel: document.getElementById('authCancel'),
+                    authError: document.getElementById('authError'),
+                    authToggle: document.getElementById('authToggle'),
+                    bgColor: document.getElementById('bgColor'),
+                    bgUpload: document.getElementById('bgUpload'),
+                    resetBg: document.getElementById('resetBg'),
+                    popOverlay: document.getElementById('popOverlay'),
+                    popImg: document.getElementById('popImg'),
+                    popName: document.getElementById('popName'),
+                    popReal: document.getElementById('popReal'),
+                    popQuality: document.getElementById('popQuality'),
+                    popClose: document.getElementById('popClose'),
+                    rankOverlay: document.getElementById('rankOverlay'),
+                    rankClose: document.getElementById('rankClose'),
+                    rankListContainer: document.getElementById('rankListContainer'),
+                    navBtns: document.querySelectorAll('.nav-btn'),
+                    tabPages: {
+                        game: document.getElementById('tabGame'),
+                        backpack: document.getElementById('tabBackpack'),
+                        market: document.getElementById('tabMarket'),
+                    },
+                };
+                this.currentMktTab = 'buy';
+                this.bindEvents();
+                this.applyBg();
+                this.refreshAll();
+            },
+
+            applyBg() {
+                const user = AuthService.getCurrentUser();
+                const color = user ? user.bgColor : '#0b0e1a';
+                const image = user ? user.bgImage : '';
+                document.documentElement.style.setProperty('--bg-color', color);
+                document.documentElement.style.setProperty('--bg-image', image ? `url(${image})` : 'none');
+                this.els.bgColor.value = color;
+            },
+
+            refreshAll() {
+                const user = AuthService.getCurrentUser();
+                this.renderUser(user);
+                this.renderGame(user);
+                this.renderBackpack(user);
+                this.renderMarket(user);
+                this.applyBg();
+            },
+
+            renderUser(user) {
+                const display = this.els.unameDisplay;
+                const btn = this.els.authBtn;
+                if (user) {
+                    display.textContent = user.username;
+                    btn.textContent = '切换';
+                    btn.className = 'btn-sm btn-danger-sm';
+                    this.els.clickBtn.disabled = false;
+                } else {
+                    display.textContent = '游客';
+                    btn.textContent = '登录';
+                    btn.className = 'btn-sm btn-gold';
+                    this.els.clickBtn.disabled = true;
+                }
+            },
+
+            renderGame(user) {
+                if (user) {
+                    this.els.clickNum.textContent = user.clicks;
+                    this.els.coinNum.textContent = user.coins;
+                } else {
+                    this.els.clickNum.textContent = '0';
+                    this.els.coinNum.textContent = '0';
+                }
+                const rank = user ? GameService.getUserRank(user.username) : null;
+                this.els.rankVal.textContent = rank ? `#${rank}` : '—';
+                this.els.rankHint.textContent = user ? `🏅 排名 #${rank || '?'}` : '登录后排名';
+            },
+
+            renderBackpack(user) {
+                const grid = this.els.heroGrid;
+                const countEl = this.els.heroCount;
+                if (!user || Object.keys(user.heroes).length === 0) {
+                    grid.innerHTML = `<div class="empty-state">还没有英雄，继续点击吧！</div>`;
+                    countEl.textContent = '0 位';
+                    return;
+                }
+                const heroes = user.heroes;
+                const total = Object.values(heroes).reduce((sum, e) => sum + (e.count || 0), 0);
+                const unique = Object.keys(heroes).length;
+                countEl.textContent = `${total} 位 (${unique} 种)`;
+
+                const pool = GameService.getHeroPool();
+                let html = '';
+                for (let [id, entry] of Object.entries(heroes)) {
+                    const hero = pool.find(h => h.id === id);
+                    if (!hero) continue;
+                    const quality = hero.quality;
+                    const color = GameService.getQualityColor(quality);
+                    const label = GameService.getQualityLabel(quality);
+                    const count = entry.count || 0;
+                    const level = entry.level || 1;
+                    const stars = '⭐'.repeat(Math.min(level, 10));
+                    const cost = level < 10 ? GameService.getPromoteCost(level) : 0;
+                    const canPromote = level < 10 && count >= 5 && user.coins >= cost;
+                    const btnText = level < 10 ?
+                        `⬆ 晋级 (需5个+${cost}🪙)` :
+                        `✨ 满级`;
+                    html += `
+                        <div class="hero-card quality-${quality}">
+                            <img src="${hero.image}" alt="${hero.name}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22240%22 viewBox=%220 0 200 240%22%3E%3Crect fill=%22%23222%22 width=%22200%22 height=%22240%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23aaa%22 font-size=%2220%22 font-family=%22sans-serif%22%3E${hero.name}%3C/text%3E%3C/svg%3E'" />
+                            <div class="hname" style="color:${color}">${hero.name}</div>
+                            <div class="hreal">${hero.realName}</div>
+                            <div class="hmeta">
+                                <span class="level">Lv.${level} ${stars}</span>
+                                <span class="count">×${count}</span>
+                            </div>
+                            ${level < 10 ?
+                                `<button class="btn-promote" data-id="${id}" ${canPromote ? '' : 'disabled'}>
+                                    ${btnText}
+                                </button>` :
+                                `<div style="font-size:11px;color:var(--gold);">${btnText}</div>`
+                            }
+                        </div>
+                    `;
+                }
+                grid.innerHTML = html;
+                grid.querySelectorAll('.btn-promote:not([disabled])').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.dataset.id;
+                        this.handlePromote(id);
+                    });
+                });
+            },
+
+            renderMarket(user) {
+                const container = this.els.mktList;
+                const tab = this.currentMktTab;
+                const pool = GameService.getHeroPool();
+
+                if (!user) {
+                    container.innerHTML = `<div class="empty-state">请先登录</div>`;
+                    return;
+                }
+
+                if (tab === 'buy') {
+                    const listings = DataService.getMarketListings();
+                    const filtered = listings.filter(l => l.seller !== user.username);
+                    if (filtered.length === 0) {
+                        container.innerHTML = `<div class="empty-state">暂时没有在售商品</div>`;
+                        return;
+                    }
+                    let html = '';
+                    for (let listing of filtered) {
+                        const hero = pool.find(h => h.id === listing.heroId);
+                        if (!hero) continue;
+                        const quality = hero.quality;
+                        const color = GameService.getQualityColor(quality);
+                        const label = GameService.getQualityLabel(quality);
+                        const canBuy = user.coins >= listing.price;
+                        const stars = '⭐'.repeat(Math.min(listing.level || 1, 10));
+                        html += `
+                            <div class="mkt-item">
+                                <img src="${hero.image}" alt="${hero.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22130%22 viewBox=%220 0 100 130%22%3E%3Crect fill=%22%23222%22 width=%22100%22 height=%22130%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23aaa%22 font-size=%2214%22 font-family=%22sans-serif%22%3E${hero.name}%3C/text%3E%3C/svg%3E'" />
+                                <div class="info">
+                                    <div class="name" style="color:${color}">${hero.name} · ${hero.realName}</div>
+                                    <div class="sub">
+                                        <span>👤 ${listing.seller}</span>
+                                        <span class="qtag" style="background:${color}22;color:${color}">${label}</span>
+                                        <span>Lv.${listing.level||1} ${stars}</span>
+                                        <span>🪙 ${listing.price}</span>
+                                    </div>
+                                </div>
+                                <button class="act-btn buy" data-id="${listing.id}" ${canBuy ? '' : 'disabled'}>
+                                    ${canBuy ? '购买' : '金币不足'}
+                                </button>
+                            </div>
+                        `;
+                    }
+                    container.innerHTML = html;
+                    container.querySelectorAll('.act-btn.buy:not([disabled])').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const id = btn.dataset.id;
+                            this.handleBuy(id);
+                        });
+                    });
+                } else if (tab === 'my') {
+                    const listings = DataService.getMarketListings();
+                    const myListings = listings.filter(l => l.seller === user.username);
+                    if (myListings.length === 0) {
+                        container.innerHTML = `<div class="empty-state">你还没有上架任何商品</div>`;
+                        return;
+                    }
+                    let html = '';
+                    for (let listing of myListings) {
+                        const hero = pool.find(h => h.id === listing.heroId);
+                        if (!hero) continue;
+                        const quality = hero.quality;
+                        const color = GameService.getQualityColor(quality);
+                        const label = GameService.getQualityLabel(quality);
+                        const stars = '⭐'.repeat(Math.min(listing.level || 1, 10));
+                        html += `
+                            <div class="mkt-item">
+                                <img src="${hero.image}" alt="${hero.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22130%22 viewBox=%220 0 100 130%22%3E%3Crect fill=%22%23222%22 width=%22100%22 height=%22130%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23aaa%22 font-size=%2214%22 font-family=%22sans-serif%22%3E${hero.name}%3C/text%3E%3C/svg%3E'" />
+                                <div class="info">
+                                    <div class="name" style="color:${color}">${hero.name} · ${hero.realName}</div>
+                                    <div class="sub">
+                                        <span>${label}</span>
+                                        <span>Lv.${listing.level||1} ${stars}</span>
+                                        <span>🪙 ${listing.price}</span>
+                                    </div>
+                                </div>
+                                <button class="act-btn danger" data-id="${listing.id}">下架</button>
+                            </div>
+                        `;
+                    }
+                    container.innerHTML = html;
+                    container.querySelectorAll('.act-btn.danger').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const id = btn.dataset.id;
+                            this.handleUnlist(id);
+                        });
+                    });
+                } else if (tab === 'list') {
+                    const owned = Object.entries(user.heroes).filter(([id, e]) => e.count > 0);
+                    if (owned.length === 0) {
+                        container.innerHTML = `<div class="empty-state">没有英雄可上架</div>`;
+                        return;
+                    }
+                    let html = `
+                        <div class="listing-form">
+                            <div class="row">
+                                <select id="listHeroSelect">
+                                    ${owned.map(([id, e]) => {
+                                        const hero = pool.find(h => h.id === id);
+                                        if (!hero) return '';
+                                        const label = GameService.getQualityLabel(hero.quality);
+                                        return `<option value="${id}">${hero.name} (${hero.realName}) ${label} Lv.${e.level||1} ×${e.count}</option>`;
+                                    }).join('')}
+                                </select>
+                            </div>
+                            <div class="row">
+                                <input type="number" id="listPrice" placeholder="价格 (金币)" min="1" value="100" />
+                                <button class="btn" id="listSubmitBtn">上架</button>
+                            </div>
+                        </div>
+                        <div style="font-size:13px;color:var(--text2);text-align:center;">上架后将消耗1个该英雄，售出后获得金币</div>
+                    `;
+                    container.innerHTML = html;
+                    const submitBtn = document.getElementById('listSubmitBtn');
+                    const select = document.getElementById('listHeroSelect');
+                    const priceInput = document.getElementById('listPrice');
+                    submitBtn.addEventListener('click', () => {
+                        const heroId = select.value;
+                        const price = parseInt(priceInput.value);
+                        if (!heroId) { alert('请选择英雄'); return; }
+                        if (isNaN(price) || price < 1) { alert('请输入有效价格'); return; }
+                        this.handleList(heroId, price);
+                    });
+                }
+            },
+
+            // ----- 市场操作 -----
+            handleBuy(listingId) {
+                const user = AuthService.getCurrentUser();
+                if (!user) return;
+                const result = GameService.buyHero(user.username, listingId);
+                if (result.success) {
+                    AuthService.setCurrentUser(user.username);
+                    this.refreshAll();
+                    alert(`✅ 购买成功！获得英雄 (Lv.${result.level})`);
+                } else {
+                    alert('❌ ' + result.message);
+                }
+            },
+
+            handleUnlist(listingId) {
+                const user = AuthService.getCurrentUser();
+                if (!user) return;
+                if (!confirm('确定下架？')) return;
+                const result = GameService.unlistHero(user.username, listingId);
+                if (result.success) {
+                    AuthService.setCurrentUser(user.username);
+                    this.refreshAll();
+                    alert('✅ 已下架');
+                } else {
+                    alert('❌ ' + result.message);
+                }
+            },
+
+            handleList(heroId, price) {
+                const user = AuthService.getCurrentUser();
+                if (!user) return;
+                const result = GameService.listHero(user.username, heroId, price);
+                if (result.success) {
+                    AuthService.setCurrentUser(user.username);
+                    this.refreshAll();
+                    alert('✅ 上架成功！');
+                } else {
+                    alert('❌ ' + result.message);
+                }
+            },
+
+            // ----- 晋级（双条件）-----
+            handlePromote(heroId) {
+                const user = AuthService.getCurrentUser();
+                if (!user) return;
+                const result = GameService.promoteHero(user.username, heroId);
+                if (result.success) {
+                    AuthService.setCurrentUser(user.username);
+                    this.refreshAll();
+                    alert(`⭐ 晋级成功！当前等级 ${result.newLevel}，消耗 ${result.cost} 金币`);
+                } else {
+                    alert('❌ ' + result.message);
+                }
+            },
+
+            // ----- 点击 -----
+            handleClick() {
+                const user = AuthService.getCurrentUser();
+                if (!user) return;
+                const result = GameService.handleClick(user.username);
+                if (!result) return;
+                AuthService.setCurrentUser(user.username);
+                this.refreshAll();
+                if (result.newHero) {
+                    this.showHeroPopup(result.newHero);
+                }
+            },
+
+            // ----- 英雄弹窗 -----
+            showHeroPopup(hero) {
+                const overlay = this.els.popOverlay;
+                this.els.popImg.src = hero.image;
+                this.els.popImg.alt = hero.name;
+                this.els.popName.textContent = hero.name;
+                this.els.popReal.textContent = hero.realName;
+                const quality = hero.quality;
+                const label = GameService.getQualityLabel(quality);
+                const color = GameService.getQualityColor(quality);
+                this.els.popQuality.textContent = label;
+                this.els.popQuality.style.color = color;
+                this.els.popQuality.style.border = `2px solid ${color}`;
+                overlay.style.display = 'flex';
+            },
+
+            closePopup() {
+                this.els.popOverlay.style.display = 'none';
+            },
+
+            // ----- 排行榜弹窗 -----
+            openRankModal() {
+                const overlay = this.els.rankOverlay;
+                const container = this.els.rankListContainer;
+                const ranked = GameService.getLeaderboard();
+                const currentUser = AuthService.getCurrentUser();
+                if (ranked.length === 0) {
+                    container.innerHTML = `<div class="empty-rank-msg">暂无玩家数据</div>`;
+                } else {
+                    let html = `
+                        <table class="rank-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>玩家</th>
+                                    <th style="text-align:right;">点击</th>
+                                    <th style="text-align:right;">🪙</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    ranked.forEach((user, idx) => {
+                        const isMe = currentUser && user.username === currentUser.username;
+                        const rankNum = idx + 1;
+                        const medal = rankNum === 1 ? '🥇' : rankNum === 2 ? '🥈' : rankNum === 3 ? '🥉' : `#${rankNum}`;
+                        html += `
+                            <tr class="${isMe ? 'me' : ''}">
+                                <td class="rank-num">${medal}</td>
+                                <td class="rank-username">${user.username} ${isMe ? '👈' : ''}</td>
+                                <td class="rank-clicks">${user.clicks}</td>
+                                <td class="rank-coins">${user.coins}</td>
+                            </tr>
+                        `;
+                    });
+                    html += `</tbody></table>`;
+                    container.innerHTML = html;
+                }
+                overlay.style.display = 'flex';
+            },
+
+            closeRankModal() {
+                this.els.rankOverlay.style.display = 'none';
+            },
+
+            // ----- 认证 -----
+            openAuthModal(mode = true) {
+                const els = this.els;
+                els.authOverlay.style.display = 'flex';
+                els.authError.classList.remove('show');
+                els.authError.textContent = '';
+                els.authUser.value = '';
+                els.authPass.value = '';
+                if (mode) {
+                    els.authTitle.textContent = '🔐 登录';
+                    els.authSub.textContent = '继续你的旅程';
+                    els.authSubmit.textContent = '登录';
+                    els.authToggle.innerHTML = '没有账号？ <strong>立即注册</strong>';
+                } else {
+                    els.authTitle.textContent = '📝 注册';
+                    els.authSub.textContent = '创建新账号';
+                    els.authSubmit.textContent = '注册';
+                    els.authToggle.innerHTML = '已有账号？ <strong>去登录</strong>';
+                }
+                els.authUser.focus();
+                this._authMode = mode;
+            },
+
+            closeAuthModal() {
+                this.els.authOverlay.style.display = 'none';
+            },
+
+            handleAuthSubmit() {
+                const els = this.els;
+                const username = els.authUser.value.trim();
+                const password = els.authPass.value.trim();
+                const isLogin = this._authMode !== undefined ? this._authMode : true;
+                const val = AuthService.validate(username, password);
+                if (!val.valid) {
+                    this.showAuthError(val.message);
+                    return;
+                }
+                let result;
+                if (isLogin) {
+                    result = AuthService.login(username, password);
+                } else {
+                    result = AuthService.register(username, password);
+                }
+                if (!result.success) {
+                    this.showAuthError(result.message);
+                    return;
+                }
+                this.closeAuthModal();
+                this.refreshAll();
+                if (!isLogin) {
+                    setTimeout(() => alert(`🎉 欢迎 ${username}！`), 100);
+                }
+            },
+
+            showAuthError(msg) {
+                const els = this.els;
+                els.authError.textContent = msg;
+                els.authError.classList.add('show');
+            },
+
+            // ----- 背景 -----
+            updateBg(color, image) {
+                const user = AuthService.getCurrentUser();
+                if (!user) {
+                    if (color) document.documentElement.style.setProperty('--bg-color', color);
+                    if (image) document.documentElement.style.setProperty('--bg-image', `url(${image})`);
+                    else document.documentElement.style.setProperty('--bg-image', 'none');
+                    return;
+                }
+                DataService.updateBackground(user.username, color, image || '');
+                AuthService.setCurrentUser(user.username);
+                this.applyBg();
+            },
+
+            // ----- Tab -----
+            switchTab(tabId) {
+                Object.values(this.els.tabPages).forEach(el => el.classList.remove('active'));
+                const target = document.getElementById(tabId);
+                if (target) target.classList.add('active');
+                this.els.navBtns.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabId);
+                });
+                if (tabId === 'tabMarket') this.renderMarket(AuthService.getCurrentUser());
+                if (tabId === 'tabBackpack') this.renderBackpack(AuthService.getCurrentUser());
+            },
+
+            // ----- 事件绑定 -----
+            bindEvents() {
+                const els = this.els;
+
+                // 认证
+                els.authBtn.addEventListener('click', () => {
+                    const user = AuthService.getCurrentUser();
+                    if (user) {
+                        if (confirm('切换账号？')) {
+                            AuthService.logout();
+                            this.refreshAll();
+                        }
+                    } else {
+                        this.openAuthModal(true);
+                    }
+                });
+                els.authCancel.addEventListener('click', () => this.closeAuthModal());
+                els.authSubmit.addEventListener('click', () => this.handleAuthSubmit());
+                els.authUser.addEventListener('keydown', (e) => { if (e.key === 'Enter') els.authPass.focus(); });
+                els.authPass.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.handleAuthSubmit(); });
+                els.authToggle.addEventListener('click', () => {
+                    this.openAuthModal(!this._authMode);
+                });
+                els.authOverlay.addEventListener('click', (e) => {
+                    if (e.target === els.authOverlay) this.closeAuthModal();
+                });
+
+                // 点击
+                els.clickBtn.addEventListener('click', () => this.handleClick());
+                document.addEventListener('keydown', (e) => {
+                    if ((e.key === ' ' || e.code === 'Space') &&
+                        document.activeElement?.tagName !== 'INPUT' &&
+                        els.authOverlay.style.display !== 'flex' &&
+                        els.popOverlay.style.display !== 'flex' &&
+                        els.rankOverlay.style.display !== 'flex') {
+                        e.preventDefault();
+                        this.handleClick();
+                    }
+                });
+
+                // 英雄弹窗
+                els.popClose.addEventListener('click', () => this.closePopup());
+                els.popOverlay.addEventListener('click', (e) => {
+                    if (e.target === els.popOverlay) this.closePopup();
+                });
+
+                // 排行榜弹窗
+                els.rankPreview.addEventListener('click', () => this.openRankModal());
+                els.rankClose.addEventListener('click', () => this.closeRankModal());
+                els.rankOverlay.addEventListener('click', (e) => {
+                    if (e.target === els.rankOverlay) this.closeRankModal();
+                });
+
+                // 导航
+                els.navBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        this.switchTab(btn.dataset.tab);
+                    });
+                });
+
+                // 市场子tab
+                els.mktTabs.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        els.mktTabs.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        this.currentMktTab = btn.dataset.mkt;
+                        this.renderMarket(AuthService.getCurrentUser());
+                    });
+                });
+
+                // 背景
+                els.bgColor.addEventListener('input', (e) => {
+                    this.updateBg(e.target.value, null);
+                });
+                els.bgUpload.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        this.updateBg(null, ev.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                });
+                els.resetBg.addEventListener('click', () => {
+                    this.updateBg('#0b0e1a', '');
+                    els.bgColor.value = '#0b0e1a';
+                    els.bgUpload.value = '';
+                });
+
+                // 自动刷新
+                setInterval(() => this.refreshAll(), 30000);
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) this.refreshAll();
+                });
+            }
+        };
+
+        // ================================================================
+        //  启动
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            UI.init();
+            console.log('✨ 星穹英雄 · 双条件晋级 (1000^(等级+1)金币 + 5个英雄)');
+            console.log('💡 共 ' + GameService.getHeroPool().length + ' 位英雄');
+            console.log('📝 所有英雄信息均在 GameService.HEROES 中静态定义，可直接编辑');
+        });
+    </script>
+</body>
+</html>
